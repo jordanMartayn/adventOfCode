@@ -1,0 +1,19 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "playing around in ts for advent of code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordanMartayn/adventOfCode.git"
+  },
+  "author": "jordan m",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jordanMartayn/adventOfCode/issues"
+  },
+  "homepage": "https://github.com/jordanMartayn/adventOfCode#readme"
+}
