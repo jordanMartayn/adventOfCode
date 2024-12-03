@@ -1,6 +1,6 @@
 //Day 3: Mull It Over  (string parsing)
 import * as fs from 'fs'
-import { removeWhiteSpace, cyanLog, sumOfNumberList } from '../utils/utils';
+import { removeWhiteSpace, cyanLog, sumOfNumberList, logGoldStar } from '../utils/utils';
 
 //methods
 const readPuzzleInput = () => {
@@ -36,6 +36,67 @@ const attemptMulOperations = (muls: string[]) => {
     return result;
 }
 
+const getIndexsByString = (corruptData: string, searchString: string) => {
+    let indexes: number[] = [];
+    let searchIndex: number = 0;
+    let searchStop: boolean = false;
+    let whileLimit: number = 0;
+
+    while (!searchStop && whileLimit < 1000) {
+        whileLimit++
+        const i: number = corruptData.indexOf(searchString, searchIndex);
+        if ( i === -1) {searchStop = true; break; } 
+        indexes.push(i);
+        searchIndex = i+1;
+    }
+    return indexes;
+}
+
+const addTagToIndexes = (indexes: number[], tagTruth: boolean) => {
+    return indexes.map( (i) => {
+        return {
+            index:i,
+            isDo:tagTruth,
+        }
+    })
+}
+
+const mergeAndSortTagged = (taggedList1: object[], taggedList2: object[]) => {
+    const mergedList: object[] = taggedList1.concat(taggedList2);
+    return mergedList.sort( (a, b) => {
+        return (a['index'] - b['index']); 
+    })
+}
+
+const removeNonChangingDoDonts = (mergedAndSortedIndex: object[]) => {
+    let currentDoStatus: boolean = true;
+    return mergedAndSortedIndex.filter( (taggedIndex: object) => {
+        if ( taggedIndex['isDo'] === currentDoStatus ) {
+            return false
+        }
+        currentDoStatus = taggedIndex['isDo'];
+        return true 
+    })
+}
+
+const validCorruptedConditionalData = ( corruptData: string, indexs: object[]) => {
+    //adding in the start as true
+    indexs.unshift( {index: 0, isDo: true} );
+    //and end as false
+    indexs.push( {index: corruptData.length, isDo: false} );
+
+    let validDataChunks: string[] = [];
+    for ( let x = 1; x <= indexs.length; x++) {
+        if ( indexs[x-1]['isDo'] ) {
+            const validData: string = corruptData.slice(indexs[x-1]['index'],indexs[x]['index']);
+            if ( validData === "") continue;
+            validDataChunks.push(validData);
+        }
+    }
+    return validDataChunks;
+
+}
+
 //exe
 cyanLog(`\n\nDay 3: Mull It Over\n\n`);
 cyanLog("Reading Corrupt data from file, and removing whitespace.\n");
@@ -50,10 +111,48 @@ cyanLog("Attempting to perform the mul operations:\n");
 const mulResults = attemptMulOperations(possibleData);
 console.log(mulResults.slice(0,5));
 
-cyanLog("Sum of all mul operations\n");
+cyanLog("Sum of all mul operations\n\n");
 const sumOfAllMuls = sumOfNumberList(mulResults);
-console.log(sumOfAllMuls); //Gold Star
+console.log(sumOfAllMuls);
+cyanLog("YAY 1st Star");
 
-//YESgo from start to first don't(),NO continue to do(), YES continue to don't() NO and so on.
+cyanLog("Part 2 - do() & don't()\n");
+cyanLog("Finding the indexs of do()\n");
+const doIndexes = getIndexsByString(corruptData, "do()");
+console.log(doIndexes);
 
+cyanLog("Finding the indexs of don't()\n");
+const dontIndexes = getIndexsByString(corruptData, "don't()");
+console.log(dontIndexes);
 
+cyanLog("Adding do/dont tag to indexs\n");
+const doIndexesWTag = addTagToIndexes(doIndexes, true);
+const dontIndexesWTag = addTagToIndexes(dontIndexes, false);
+console.log(doIndexesWTag.slice(0,5),"etc",dontIndexesWTag.slice(0,5),"etc")
+
+cyanLog("Merging do list & dont list, then sorting by index");
+const mergedAndSortedIndex = mergeAndSortTagged(doIndexesWTag, dontIndexesWTag);
+console.log(mergedAndSortedIndex);
+
+cyanLog("Removing following Indexs that dont flip, ie false(keep),true(keep),true(remove), etc")
+const filteredIndexs = removeNonChangingDoDonts(mergedAndSortedIndex);
+console.log(filteredIndexs);
+
+cyanLog("Using The Indexes Get Sections of valid corrupted data, third valid chunk:");
+const validDataChunks = validCorruptedConditionalData(corruptData, filteredIndexs);
+
+cyanLog("Running the chunks through the mul pipeline; retrieve uncorrupted data, attmept mul opperations, sum of muls, sum of all combined");
+let sumOfEachChunk: number[] = [];
+validDataChunks.forEach( (chunk: string) => {
+    const retrievedData = retrieveUncorruptedData(chunk);
+    
+    const mulledData = attemptMulOperations(retrievedData);
+    
+    const sumOf = sumOfNumberList(mulledData);
+    
+    sumOfEachChunk.push(sumOf);
+})
+const sumOfAllChunkData = sumOfNumberList(sumOfEachChunk);
+console.log(sumOfAllChunkData);
+
+logGoldStar("YAY")
