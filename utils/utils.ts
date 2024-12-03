@@ -11,4 +11,8 @@ function sumOfNumberList( numberList: number[] ) {
     return numberList.reduceRight( (tot,val) => {return tot + val} );
 }
 
-export {cyanLog, splitStringListByWhiteSpace, sumOfNumberList }
+function removeWhiteSpace(string: string){
+    return string.replace(/\s+/,'');
+}
+
+export {cyanLog, splitStringListByWhiteSpace, sumOfNumberList, removeWhiteSpace }
