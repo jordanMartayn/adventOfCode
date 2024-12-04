@@ -20,8 +20,8 @@ function removeWhiteSpace(string) {
 }
 var logGoldStar = function (message) {
     var star = '\u2B50'; // Unicode for gold star (⭐)
-    var border = "".concat(star.repeat(3), " GOLD STAR LOG ").concat(star.repeat(3));
+    var border = "".concat(star.repeat(1), " GOLD STAR LOG ").concat(star.repeat(1));
     var timestamp = new Date().toLocaleString();
-    console.log("%c".concat(border, "\n%c[").concat(timestamp, "]: %c").concat(message, "\n%c").concat(border), 'color: gold; font-weight: bold;', 'color: gray; font-style: italic;', 'color: green; font-weight: bold;', 'color: gold; font-weight: bold;');
+    console.log("%c".concat(border, "\n%c").concat(message, "\n%c").concat(border), 'color: gold; font-weight: bold;', 'color: gray; font-style: italic;', 'color: green; font-weight: bold;', 'color: gold; font-weight: bold;');
 };
 exports.logGoldStar = logGoldStar;
